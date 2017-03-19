@@ -10,7 +10,7 @@ exports.up = function (knex, Promise) {
       //Data
       locationsTable.string('address', 2500).notNullable()
       locationsTable.string('name', 100).notNullable()
-      locationsTable.timestamp('create_at').notNullable()
+      locationsTable.timestamp('create_at').notNullable().defaultTo(knex.fn.now())
     })
 
     .createTable('users', function (usersTable) {
@@ -25,8 +25,7 @@ exports.up = function (knex, Promise) {
       usersTable.string('gender', 10).notNullable()
       usersTable.string('guid', 36).notNullable().unique()
       usersTable.string('location', 36).references('guid').inTable('locations')
-      usersTable.timestamp('create_at').notNullable()
-
+      usersTable.timestamp('create_at').notNullable().defaultTo(knex.fn.now())
     })
 
 
@@ -39,7 +38,7 @@ exports.up = function (knex, Promise) {
       showersTable.string('location', 36).references('guid').inTable('locations')
       showersTable.string('gender', 10).notNullable()
       showersTable.string('name', 50).notNullable()
-      showersTable.timestamp('create_at').notNullable()
+      showersTable.timestamp('create_at').notNullable().defaultTo(knex.fn.now())
 
     })
 

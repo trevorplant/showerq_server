@@ -1,69 +1,19 @@
 import Knex from './knex'
 import jwt from 'jsonwebtoken'
 import GUID from 'node-uuid'
+import { login, getAllUsers, addUser } from './controllers/usersController'
+import { allShowers } from './controllers/showersController'
 
 const routes = [
   {
     method: 'GET',
     path: '/showers',
-    handler: (request, reply) => {
-      const getOperation = Knex('showers')
-        .select('name', 'gender')
-        .then((results) => {
-          if (!results || results.length === 0) {
-            reply({
-              error: true,
-              errMessage: 'no showers found'
-            })
-          }
-          reply({
-            dataCount: results.length,
-            data: results
-          })
-        }).catch(err => {
-          reply('server-side oops')
-        })
-    }
+    handler: (request, reply) => allShowers(request, reply)
   },
   {
     method: 'POST',
-    path: '/auth',
-    handler: (request, reply) => {
-      const { username, password } = request.payload
-      console.log('got %s, %s', username, password)
-      const getOperation = Knex('users').where({
-        username,
-      })
-        .select('guid', 'password')
-        .then(([user]) => {
-          if (!user) {
-            reply({
-              error: true,
-              errMessage: 'the specified user was not found'
-            })
-            return
-          }
-          // need to do some better auth
-          if (user.password === password) {
-            const token = jwt.sign({
-              username,
-              scope: user.guid
-            }, 'yietyisViedcygOwnotvekcevchawespAckvisVagdiodnacolceaHyinnyaggOr9TwyghujcujMegriatchOmNosgawt}On', {
-                algorithm: 'HS256',
-                expiresIn: '1h'
-              })
-
-            reply({
-              token,
-              scope: user.guid
-            })
-          } else {
-            reply('incorrect password')
-          }
-        }).catch(err => {
-          reply('server-side Oopsy')
-        })
-    }
+    path: '/login',
+    handler: (request, reply) => login(request, reply)
   },
   {
     method: 'GET',
@@ -73,26 +23,12 @@ const routes = [
       }
     },
     path: '/users',
-    handler: (request, reply) => {
-      console.log(request.auth.credentials)
-      console.log(request.payload)
-      const getOperation = Knex('users')
-        .select('name', 'gender', 'location')
-        .then((results) => {
-          if (!results || results.length === 0) {
-            reply({
-              error: true,
-              errMessage: 'no users found'
-            })
-          }
-          reply({
-            dataCount: results.length,
-            data: results
-          })
-        }).catch(err => {
-          reply('server-side oops')
-        })
-    }
+    handler: (request, reply) => getAllUsers(request, reply)
+  },
+  {
+    method: 'PUT',
+    path: '/register',
+    handler: (request, reply) => addUser(request, reply)
   }
   // ,
   // {
